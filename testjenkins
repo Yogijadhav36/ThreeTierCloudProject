@@ -1,0 +1,30 @@
+pipeline {
+    agent any
+    
+    parameters {
+        string(name: 'env', defaultValue: 'dev', description: 'Environment to run the tests in')
+    }
+
+    stages {
+        stage('Execute Test') {
+            steps {
+                script {
+                    currentBuild.displayName = "loop-build $BUILD_NUMBER"
+                    def testCount = 1  // Default is to run the test once
+
+                    // Determine the number of times to run the test based on the 'env' parameter
+                    if (params.env == 'stage') {
+                        testCount = 2
+                    } else if (params.env == 'prod') {
+                        testCount = 3
+                    }
+
+                    // Run the test the determined number of times
+                    for (int i = 0; i < testCount; i++) {
+                        bat 'test.cmd'  // Executes the test.cmd script
+                    }
+                }
+            }
+        }
+    }
+}
